@@ -27,24 +27,14 @@ public class Hyphenator {
     this.eh=eh;
   }
 
- /** loads hyphenation table 
-  @param in hyphenation table
-  @throws java.io.IOException
-  */
-  public void loadTable(java.io.InputStream in) throws java.io.IOException {
-    int[] codelist=new int[256]; {for(int i=0;i!=256;++i) codelist[i]=i;}
-    loadTable(in,codelist);
-  }
-
  /** loads hyphenation table and code list for non-ucs encoding 
   @param in hyphenation table
-  @param codelist an array of 256 elements. maps one-byte codes to UTF codes
   @throws java.io.IOException
  */
-  public void loadTable(java.io.InputStream in,int[] codelist) throws java.io.IOException {
+  public void loadTable(java.io.Reader in) throws java.io.IOException {
     exceptions=new Hashtable();
     entrytab=new List[256]; for(int i=0;i!=256;++i) entrytab[i]=new List();
-    Scanner s=new Scanner(in,codelist,eh);
+    Scanner s=new Scanner(in,eh);
     final short EXCEPTIONS=1, PATTERNS=2, NONE=0;
     short state=NONE;
     short sym;
@@ -169,7 +159,7 @@ public class Hyphenator {
   private static class Scanner {
     final static short  EOF=0, LBRAC=1, RBRAC=2, PATTERNS=3, EXCEPTIONS=4, PATTERN=5;
     char[] pattern=new char[0]; int patlen;
-    private java.io.InputStream in; private int[] codelist;
+    private java.io.Reader in;
     private ErrorHandler eh;
     private int cc='\n',cc1=-1, prevlno=-1, lno=0, cno=0;
 
@@ -335,8 +325,8 @@ public class Hyphenator {
       acctab.put(new Integer(cp2i('s','s')),new Integer(0xdf));
     }
 
-    Scanner(java.io.InputStream in,int[] codelist,ErrorHandler eh) throws java.io.IOException {
-      this.codelist=codelist; this.in=in;  this.eh=eh;
+    Scanner(java.io.Reader in,ErrorHandler eh) throws java.io.IOException {
+      this.in=in;  this.eh=eh;
       read();
     }
 
@@ -406,7 +396,6 @@ public class Hyphenator {
 		}
 	      }
 	    }
-	    cc=codelist[cc];
 	  } break;
 	 /* many hyphenation patterns contain accents patterned after \rm font's macros
 	  the simplest approach is to adopt it -- and when I look at this code I am really not
@@ -434,7 +423,7 @@ public class Hyphenator {
 	    default: break;
 	    }
 	  } break;
-	  default: if(cc!=-1) cc=codelist[cc]; break;
+	  default: break;
 	  }
 	} catch(java.io.IOException e) {
 	  error(e.toString());
@@ -586,49 +575,16 @@ public class Hyphenator {
       System.err.println("call: java net.davidashen.text.Hyphenator word table.tex [codes.txt]");
       System.exit(1);
     }
-    java.io.InputStream table=null;
+    java.io.Reader table=null;
     try {
-      table=new java.io.BufferedInputStream(new java.io.FileInputStream(args[1]));
+      table=new java.io.BufferedReader(new java.io.InputStreamReader(
+	    new java.io.FileInputStream(args[1]), "UTF8"));
     } catch(java.io.IOException e) {
       System.err.println("cannot open hyphenation table "+args[1]+": "+e.toString());
       System.exit(1);
     }
-    int[] codelist=new int[256];
-    for(int i=0;i!=256;++i) codelist[i]=i;
-    if(args.length==3) {
-      java.io.BufferedReader codes=null;
-      try {
-	codes=new java.io.BufferedReader(new java.io.FileReader(args[2]));
-      } catch(java.io.IOException e) {
-	System.err.println("cannot open code list"+args[2]+": "+e.toString());
-	System.exit(1);
-      }
-      try {
-	String line;
-	while((line=codes.readLine())!=null) {
-	  java.util.StringTokenizer tokenizer=new java.util.StringTokenizer(line);
-	  String token;
-	  if(tokenizer.hasMoreTokens()) { // skip empty lines
-	    token=tokenizer.nextToken();
-	    if(!token.startsWith("%")) { // lines starting with % are comments
-	      int key=Integer.decode(token).intValue(), value=key;
-	      if(tokenizer.hasMoreTokens()) {
-		token=tokenizer.nextToken();
-		value=Integer.decode(token).intValue();
-	      }
-	      codelist[key]=value;
-	    }
-	  }
-	}
-	codes.close();
-      } catch(java.io.IOException e) {
-	System.err.println("error reading code list: "+e.toString());
-	System.exit(1);
-      }
-    }
-
     try {
-      hyphenator.loadTable(table,codelist);
+      hyphenator.loadTable(table);
       table.close();
     } catch(java.io.IOException e) {
       System.err.println("error loading hyphenation table: "+e.toString());

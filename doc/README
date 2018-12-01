@@ -70,21 +70,13 @@ translated into UCS codes; that is, \^a is 0xe2, \l is 0x142
 etc. See net.davidashen.text.Hyphenator.Scanner.acctab for the
 full list. 
 
-Code lists
-
-Certain hyphenation tables use encoding other than ISO-8859-1.
-To facilitate translation from that particular encoding to UCS,
-a list of codes and their unicode values can be passed to the
-hyphenator. See ruhyphal.tex, koicodes.txt  for an example of
-a KOI8-R-encoded hyphenation table and a list of codes.
-
 David Tolpin
 http://www.davidashen.net/
 
 Copyright Notices
 
 TeXHyphenator-J, a hyphenation library in Java is developed by David Tolpin.
-Copyright (C) 2003 David Tolpin
+Copyright (C) 2003-2018 David Tolpin
 URL: http://www.davidashen.net/
 
 This library is free software; you can redistribute it and/or
@@ -110,4 +102,3 @@ pre-release 1.0
 
 Revision 1.1  2003/08/21 08:32:44  dvd
 *** empty log message ***
-
