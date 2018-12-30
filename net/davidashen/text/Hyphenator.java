@@ -110,7 +110,7 @@ public class Hyphenator {
 	      values=new int[echars.length+1];
 	      echars[0]=echars[echars.length-1]='.';
 	      for(int i=0;i!=length;++i) echars[1+i]=Character.toLowerCase(chars[jch+i]);
-	      for(int istart=0;istart!=length;++istart) {
+	      for(int istart=0;istart!=echars.length;++istart) {
 		int iet=(int)echars[istart]%256;
 		List entry=entrytab[iet];
 		int i=istart;

@@ -2,7 +2,7 @@ JAVAC=javac
 JAVADOC=javadoc
 JAR=jar
 OPT=-O -g
-VERSION=1.1
+VERSION=1.5
 CLASS= \
 ./net/davidashen/text/Hyphenator.class \
 ./net/davidashen/util/ErrorHandler.class \
