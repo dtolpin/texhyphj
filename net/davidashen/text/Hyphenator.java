@@ -100,7 +100,7 @@ public class Hyphenator {
 	      values=new int[echars.length+1];
 	      echars[0]=echars[echars.length-1]='.';
 	      for(int i=0;i!=length;++i) echars[1+i]=Character.toLowerCase(chars[jch+i]);
-	      for(int istart=0;istart!=length;++istart) {
+	      for(int istart=0;istart!=echars.length;++istart) {
 		int iet=(int)echars[istart]%256;
 		List entry=entrytab[iet];
 		int i=istart;
@@ -571,8 +571,8 @@ public class Hyphenator {
       public void exception(String s,Exception e) {System.err.println("ERROR: "+s); e.printStackTrace(); }
       public boolean isDebugged(String guard) {return false;}
     });
-    if(args.length!=2&&args.length!=3) {
-      System.err.println("call: java net.davidashen.text.Hyphenator word table.tex [codes.txt]");
+    if(args.length!=2) {
+      System.err.println("call: java net.davidashen.text.Hyphenator word table.tex");
       System.exit(1);
     }
     java.io.Reader table=null;
